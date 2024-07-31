@@ -1,14 +1,14 @@
 package game;
+
 import piece.Bishop;
 import piece.King;
 import piece.Knight;
 import piece.Piece;
 import piece.Queen;
 import piece.Pawn;
+import piece.Rook;
 import javax.swing.*;
-
 import Board.Board;
-
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -16,18 +16,19 @@ import java.awt.event.MouseEvent;
 public class Game extends JFrame {
     private JButton[][] squares = new JButton[8][8];
     private JPanel boardPanel = new JPanel(new GridLayout(8, 8));
-    private Board board = new Board(); // Your console game Board class
+    private Board board = new Board(); 
     private Piece selectedPiece = null;
     private int startRow, startCol;
-    private Color[][] originalColors = new Color[8][8]; // To store original colors of the squares
+    private Color[][] originalColors = new Color[8][8]; 
+    private JTextArea transcript = new JTextArea(20, 20); 
 
     public Game() {
         setTitle("Chess Board");
-        setSize(600, 600);
+        setSize(800, 600); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         initializeBoard();
-        add(boardPanel);
+        add(boardPanel, BorderLayout.CENTER); 
+        add(new JScrollPane(transcript), BorderLayout.EAST);
         setVisible(true);
     }
 
@@ -40,10 +41,10 @@ public class Game extends JFrame {
                 squares[row][col].setOpaque(true);
                 squares[row][col].setBorderPainted(false);
 
-                // Set colors for the squares: light wood and dark wood
+                // set colors for the squares: light wood and dark wood
                 Color color = (row + col) % 2 == 0 ? new Color(240, 217, 181) : new Color(181, 136, 99);
                 squares[row][col].setBackground(color);
-                originalColors[row][col] = color; // Store the original color
+                originalColors[row][col] = color; 
 
                 squares[row][col].addMouseListener(new MoveListener(row, col));
                 boardPanel.add(squares[row][col]);
@@ -76,35 +77,42 @@ public class Game extends JFrame {
         @Override
         public void mousePressed(MouseEvent e) {
             if (selectedPiece != null) {
-                // Reset the background color of the previously selected square
+                
                 squares[startRow][startCol].setBackground(originalColors[startRow][startCol]);
             }
-
             Piece piece = board.getPieceAt(row, col);
             if (piece != null && piece.isWhite() == board.isWhiteTurn) {
                 selectedPiece = piece;
                 startRow = row;
                 startCol = col;
-
-                // Highlight the selected piece's square
+                // highlights selected square
                 squares[startRow][startCol].setBackground(Color.GREEN);
             } else {
                 if (selectedPiece != null) {
-                    // Try to make the move
+                    // make move
                     boolean validMove = board.makeMove(startRow, startCol, row, col);
                     if (validMove) {
                         updateBoard();
                         checkGameState();
+                        logMove(startRow, startCol, row, col); // add move to transcript
                     } else {
                         JOptionPane.showMessageDialog(Game.this, "Invalid move for " + selectedPiece.toString().trim() + ", try again.");
                     }
-
-                    // Reset the background color of the previously selected square
+                    // unhighlight the square
                     squares[startRow][startCol].setBackground(originalColors[startRow][startCol]);
                     selectedPiece = null;
                 }
             }
         }
+    }
+
+    private void logMove(int startRow, int startCol, int endRow, int endCol) {
+    	// print log of each move made
+        char startColChar = (char) ('a' + startCol);
+        char endColChar = (char) ('a' + endCol);
+        String moveString = String.format("%s: %c%d to %c%d\n",
+            selectedPiece.toString().trim(), startColChar, 8 - startRow, endColChar, 8 - endRow);
+        transcript.append(moveString); 
     }
 
     private void checkGameState() {
@@ -120,4 +128,3 @@ public class Game extends JFrame {
         SwingUtilities.invokeLater(Game::new);
     }
 }
-
