@@ -14,6 +14,10 @@ import java.awt.image.BufferedImage;
 
 public class Game extends JFrame {
    
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JButton[][] squares = new JButton[8][8];
     private JPanel boardPanel = new JPanel(new GridLayout(8, 8));
     private Board board = new Board(); 
@@ -130,6 +134,7 @@ public class Game extends JFrame {
 
         @Override
         public void mousePressed(MouseEvent e) {
+        	// allows the piece selection and to move
             if (selectedPiece != null) {
                 squares[startRow][startCol].setBackground(originalColors[startRow][startCol]);
                 clearHighlights();
@@ -137,6 +142,7 @@ public class Game extends JFrame {
 
             Piece piece = board.getPieceAt(row, col);
             if (piece != null && piece.isWhite() == board.isWhiteTurn) {
+            	// select the piece if its the right turn
                 selectedPiece = piece;
                 startRow = row;
                 startCol = col;
@@ -150,6 +156,8 @@ public class Game extends JFrame {
                         checkGameState();
                         transcribeMove(startRow, startCol, row, col);
                     } else {
+                    	// shows if move is invalid 
+        
                         JOptionPane.showMessageDialog(Game.this, "Invalid move for " + selectedPiece.toString().trim() + ", try again.");
                     }
                 }

@@ -111,10 +111,6 @@ public class Board {
     }
 
     public boolean isCheckmate(String color) {
-        // checks if the king is in checkmate
-        int[] kingPos = getKingPos(color.equals("white"));
-        int row = kingPos[0];
-        int col = kingPos[1];
         // checks if in check
         if (!isInCheck(color)) {
             return false;
