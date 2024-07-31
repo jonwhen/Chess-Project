@@ -1,12 +1,8 @@
 package game;
 
-import piece.Bishop;
-import piece.King;
-import piece.Knight;
+
 import piece.Piece;
-import piece.Queen;
-import piece.Pawn;
-import piece.Rook;
+
 import javax.swing.*;
 import Board.Board;
 import java.awt.*;
@@ -15,8 +11,14 @@ import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.Set;
 
+import java.awt.image.BufferedImage;
+
 public class Game extends JFrame {
-    private JButton[][] squares = new JButton[8][8];
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JButton[][] squares = new JButton[8][8];
     private JPanel boardPanel = new JPanel(new GridLayout(8, 8));
     private Board board = new Board(); 
     private Piece selectedPiece = null;
@@ -37,6 +39,7 @@ public class Game extends JFrame {
     }
 
     private void initializeBoard() {
+    	// initializes the board at the start of the game 
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 squares[row][col] = new JButton();
@@ -57,6 +60,7 @@ public class Game extends JFrame {
     }
 
     private void updateBoard() {
+    	// updates the board after a piece is moved
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 Piece piece = board.getPieceAt(row, col);
@@ -69,9 +73,17 @@ public class Game extends JFrame {
         }
     }
     private void highlightPossibleMoves(int row, int col) {
+    	// receives possible moves and sets icon for each 
         Piece piece = board.getPieceAt(row, col);
         if (piece != null) {
             possibleMoves.clear();
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+        
+                    squares[i][j].setIcon(null);
+                }
+            }
+            
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
                     if (piece.validMove(board.pieces, row, col, i, j)) {
@@ -79,20 +91,36 @@ public class Game extends JFrame {
                     }
                 }
             }
+            
             for (Point move : possibleMoves) {
                 int r = move.x;
                 int c = move.y;
-                squares[r][c].setBackground(new Color(144, 238, 144)); // Light green
+               
+                squares[r][c].setIcon(createDotIcon());
             }
         }
     }
- void clearHighlights() {
+
+    private Icon createDotIcon() {
+        int size = 15;
+        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = image.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setColor(Color.BLACK);
+        g.fillOval(0, 0, size, size);
+        g.dispose();
+        return new ImageIcon(image);
+    }
+
+    private void clearHighlights() {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 squares[row][col].setBackground(originalColors[row][col]);
+                squares[row][col].setIcon(null);
             }
         }
     }
+
 
     private class MoveListener extends MouseAdapter {
         private int row, col;
@@ -123,19 +151,19 @@ public class Game extends JFrame {
                     if (validMove) {
                         updateBoard();
                         checkGameState();
-                        logMove(startRow, startCol, row, col); // add move to transcript
+                        transcribeMove(startRow, startCol, row, col); // add move to transcript
                     } else {
                         JOptionPane.showMessageDialog(Game.this, "Invalid move for " + selectedPiece.toString().trim() + ", try again.");
                     }
                 }
-                // unhighlight the square
+                // remove highlights of the square
                 clearHighlights();
                 selectedPiece = null;
             }
         }
     }
 
-    private void logMove(int startRow, int startCol, int endRow, int endCol) {
+    private void transcribeMove(int startRow, int startCol, int endRow, int endCol) {
         char startColChar = (char) ('a' + startCol);
         char endColChar = (char) ('a' + endCol);
         String moveString = String.format("%s: %c%d to %c%d\n",
