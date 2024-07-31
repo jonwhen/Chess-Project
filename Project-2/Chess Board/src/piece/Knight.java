@@ -8,7 +8,6 @@ public class Knight extends Piece {
     @Override
     public boolean validMove(Piece[][] board, int startRow, int startCol, int endRow, int endCol) {
         // implement the logic for a knight's valid moves
-        // this will depend on the rules of chess and the current state of the board
         int rowDiff = Math.abs(startRow - endRow);
         int colDiff = Math.abs(startCol - endCol);
 

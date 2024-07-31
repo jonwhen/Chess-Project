@@ -4,7 +4,7 @@ public class Pawn extends Piece {
 
     public Pawn(boolean isWhite) {
         super(isWhite);
-        this.hasMoved = false; // Initially, the pawn hasn't moved
+        this.hasMoved = false; // set all pawns to has not moved
     }
 
     @Override
@@ -14,20 +14,20 @@ public class Pawn extends Piece {
 
     @Override
     public boolean validMove(Piece[][] board, int startRow, int startCol, int endRow, int endCol) {
-        int direction = isWhite() ? -1 : 1; // White pawns move up, black pawns move down
+        int direction = isWhite() ? -1 : 1; // sets direction for each pawn
 
-        // Check if the move is one square forward
+        // checks to see if the move is forward one
         if (startCol == endCol && endRow == startRow + direction && board[endRow][endCol] == null) {
             return true;
         }
 
-        // Check if the move is two squares forward from the starting position
+        // checks if its the first move, if its two squares forward
         if (!hasMoved && startCol == endCol && endRow == startRow + 2 * direction &&
             board[endRow][endCol] == null && (startRow == 1 || startRow == 6)) {
             return true;
         }
 
-        // Check if the move is a capture move
+        // checks if the move is a diagonal capture
         if (Math.abs(startCol - endCol) == 1 && endRow == startRow + direction && board[endRow][endCol] != null &&
             board[endRow][endCol].isWhite() != isWhite()) {
             return true;
@@ -36,7 +36,7 @@ public class Pawn extends Piece {
         return false;
     }
 
-    // Call this method when a pawn moves to update its status
+    // updates a pawn once it has moved to disable two square moves
     public void setHasMoved(boolean hasMoved) {
         this.hasMoved = hasMoved;
     }

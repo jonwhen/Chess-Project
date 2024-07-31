@@ -1,5 +1,4 @@
 package Board;
-import java.util.Scanner;
 
 import piece.Bishop;
 import piece.King;
@@ -10,7 +9,6 @@ import piece.Queen;
 import piece.Rook;
 
 public class Board {
-
     public Piece[][] pieces;
     public boolean isWhiteTurn;
 
@@ -19,15 +17,14 @@ public class Board {
         this.isWhiteTurn = true;
         initializePieces();
     }
-    
- 
+
     private void initializePieces() {
         // initialize the pieces on the board
         for (int i = 0; i < 8; i++) {
             pieces[1][i] = new Pawn(false);
             pieces[6][i] = new Pawn(true);
         }
-        // set the pieces on the board to their respective spot
+        // set the pieces on the board to their respective spots
         pieces[0][0] = pieces[0][7] = new Rook(false);
         pieces[0][1] = pieces[0][6] = new Knight(false);
         pieces[0][2] = pieces[0][5] = new Bishop(false);
@@ -41,36 +38,27 @@ public class Board {
         pieces[7][4] = new King(true);
     }
 
-
     public boolean makeMove(int startRow, int startCol, int endRow, int endCol) {
+        // will make a move as long as it is valid and also checks for castling and checkmate
         Piece piece = pieces[startRow][startCol];
+        // checks for the correct turn
         if (piece != null && piece.isWhite() == isWhiteTurn) {
-            // Check if the move is valid for the piece
+            // makes sure move is valid
             if (piece.validMove(pieces, startRow, startCol, endRow, endCol)) {
-                
-                // Handle castling
                 if (piece instanceof King && Math.abs(startCol - endCol) == 2) {
-                    // Castling move
+                    // castling
                     int rookCol = (endCol > startCol) ? 7 : 0;
                     int rookEndCol = (endCol > startCol) ? 5 : 3;
                     Piece rook = pieces[startRow][rookCol];
-                    
+                    // performs castling and updates rook hasMoved state
                     if (rook != null && rook instanceof Rook && !((Rook) rook).hasMoved()) {
-                        // Move the king
                         pieces[endRow][endCol] = piece;
                         pieces[startRow][startCol] = null;
-
-                        // Move the rook
                         pieces[startRow][rookEndCol] = rook;
                         pieces[startRow][rookCol] = null;
-
-                        // Update the hasMoved status
-                       
                         ((Rook) rook).setHasMoved(true);
-
-                        // Check if the king is in check after castling
+                        // checks if the move will take king out of check, if not invalid
                         if (isInCheck(piece.isWhite() ? "white" : "black")) {
-                            // Undo the move
                             pieces[startRow][startCol] = piece;
                             pieces[endRow][endCol] = null;
                             pieces[startRow][rookCol] = rook;
@@ -78,52 +66,41 @@ public class Board {
                             System.out.println("Invalid move: King is still in check.");
                             return false;
                         }
-
                         isWhiteTurn = !isWhiteTurn;
                         return true;
                     }
                 } else {
-                    // Regular move
                     Piece targetPiece = pieces[endRow][endCol];
                     pieces[endRow][endCol] = piece;
                     pieces[startRow][startCol] = null;
-
-                    // Update pawn's hasMoved status
                     if (piece instanceof Pawn) {
                         ((Pawn) piece).setHasMoved(true);
                     }
-
-                    // Check if the move results in checkmate
                     if (targetPiece instanceof King) {
                         String winner = piece.isWhite() ? "White" : "Black";
                         System.out.println("Checkmate! " + winner + " wins!");
                         return true;
                     }
-
-                    // Check if the move results in check
-                    boolean isInCheck = isInCheck(piece.isWhite() ? "white" : "black");
-                    if (isInCheck) {
-                        boolean isCheckmate = isCheckmate(piece.isWhite() ? "white" : "black");
-                        if (isCheckmate) {
-                            String winner = piece.isWhite() ? "White" : "Black";
-                            System.out.println("Checkmate! " + winner + " wins!");
-                            return true;
-                        }
-                        System.out.println("Check, " + (piece.isWhite() ? "white" : "black") + " is in check.");
+                    if (isInCheck(piece.isWhite() ? "white" : "black")) {
+                        pieces[startRow][startCol] = piece;
+                        pieces[endRow][endCol] = targetPiece;
+                        System.out.println("Invalid move: King is still in check.");
+                        return false;
+                    } else {
+                        isWhiteTurn = !isWhiteTurn;
+                        return true;
                     }
-
-                    isWhiteTurn = !isWhiteTurn;
-                    return true;
                 }
+                return true;
             } else {
                 System.out.println("Invalid move for " + piece.getClass().getSimpleName() + ", try again.");
+                return false;
             }
         } else {
             System.out.println("Invalid move, try again.");
+            return false;
         }
-        return false;
     }
-
 
     // added getPiece function to return user selected piece
     public Piece getPieceAt(int row, int col) {
@@ -134,16 +111,15 @@ public class Board {
     }
 
     public boolean isCheckmate(String color) {
+        // checks if the king is in checkmate
         int[] kingPos = getKingPos(color.equals("white"));
         int row = kingPos[0];
         int col = kingPos[1];
-
         // checks if in check
         if (!isInCheck(color)) {
             return false;
         }
-
-        // checks if theres any possible moves to get out of check
+        // checks if there are any possible moves to get out of check
         for (int x = 0; x < pieces.length; x++) {
             for (int y = 0; y < pieces[x].length; y++) {
                 if (pieces[x][y] != null && pieces[x][y].isWhite() == color.equals("white")) {
@@ -151,18 +127,13 @@ public class Board {
                     for (int i = 0; i < pieces.length; i++) {
                         for (int j = 0; j < pieces[i].length; j++) {
                             if (piece.validMove(pieces, x, y, i, j)) {
-                           
                                 Piece capturedPiece = pieces[i][j];
                                 pieces[i][j] = piece;
                                 pieces[x][y] = null;
-
                                 // checks if still in check after simulated move
                                 boolean stillInCheck = isInCheck(color);
-
-                               
                                 pieces[x][y] = piece;
                                 pieces[i][j] = capturedPiece;
-
                                 if (!stillInCheck) {
                                     return false;
                                 }
@@ -172,18 +143,14 @@ public class Board {
                 }
             }
         }
-
-        return true; 
+        return true;
     }
 
-
-
     public boolean isInCheck(String color) {
-    	// gets the king position and determines if is in check 
+        // gets the king position and determines if it is in check
         int[] kingPos = getKingPos(color.equals("white"));
         int row = kingPos[0];
         int col = kingPos[1];
-
         for (int x = 0; x < pieces.length; x++) {
             for (int y = 0; y < pieces[0].length; y++) {
                 if (pieces[x][y] != null && pieces[x][y].isWhite() != color.equals("white")) {
@@ -193,9 +160,9 @@ public class Board {
                 }
             }
         }
-
         return false;
     }
+
     // locates the king for each side
     private int[] getKingPos(boolean isWhite) {
         int[] pos = new int[2];
@@ -210,5 +177,4 @@ public class Board {
         }
         return pos;
     }
-    }
-
+}

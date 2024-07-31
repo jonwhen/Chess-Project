@@ -10,14 +10,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.Set;
-
 import java.awt.image.BufferedImage;
 
 public class Game extends JFrame {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+   
 	private JButton[][] squares = new JButton[8][8];
     private JPanel boardPanel = new JPanel(new GridLayout(8, 8));
     private Board board = new Board(); 
@@ -102,6 +98,7 @@ public class Game extends JFrame {
     }
 
     private Icon createDotIcon() {
+    	// creates the dot icon to represent possible locations to move
         int size = 15;
         BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image.createGraphics();
@@ -113,6 +110,7 @@ public class Game extends JFrame {
     }
 
     private void clearHighlights() {
+    	// clears highlight of pieces and possible places after moving
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 squares[row][col].setBackground(originalColors[row][col]);
@@ -124,7 +122,7 @@ public class Game extends JFrame {
 
     private class MoveListener extends MouseAdapter {
         private int row, col;
-
+        
         public MoveListener(int row, int col) {
             this.row = row;
             this.col = col;
@@ -136,34 +134,34 @@ public class Game extends JFrame {
                 squares[startRow][startCol].setBackground(originalColors[startRow][startCol]);
                 clearHighlights();
             }
+
             Piece piece = board.getPieceAt(row, col);
             if (piece != null && piece.isWhite() == board.isWhiteTurn) {
                 selectedPiece = piece;
                 startRow = row;
                 startCol = col;
-                // highlights selected square
                 squares[startRow][startCol].setBackground(Color.GREEN);
                 highlightPossibleMoves(startRow, startCol);
             } else {
                 if (selectedPiece != null && possibleMoves.contains(new Point(row, col))) {
-                    // make move
                     boolean validMove = board.makeMove(startRow, startCol, row, col);
                     if (validMove) {
                         updateBoard();
                         checkGameState();
-                        transcribeMove(startRow, startCol, row, col); // add move to transcript
+                        transcribeMove(startRow, startCol, row, col);
                     } else {
                         JOptionPane.showMessageDialog(Game.this, "Invalid move for " + selectedPiece.toString().trim() + ", try again.");
                     }
                 }
-                // remove highlights of the square
                 clearHighlights();
                 selectedPiece = null;
             }
         }
+
     }
 
     private void transcribeMove(int startRow, int startCol, int endRow, int endCol) {
+    	// adds a transcription of moves made to the side
         char startColChar = (char) ('a' + startCol);
         char endColChar = (char) ('a' + endCol);
         String moveString = String.format("%s: %c%d to %c%d\n",
@@ -172,6 +170,7 @@ public class Game extends JFrame {
     }
 
     private void checkGameState() {
+    	// checks the state of the game, notifies if in check and ends game if checkmate
         String currentPlayerColor = board.isWhiteTurn ? "white" : "black";
         String opponentColor = board.isWhiteTurn ? "black" : "white";
 

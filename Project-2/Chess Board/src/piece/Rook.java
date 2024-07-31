@@ -1,4 +1,5 @@
 package piece;
+
 public class Rook extends Piece {
 
     private boolean hasMoved;
@@ -10,9 +11,9 @@ public class Rook extends Piece {
 
     @Override
     public boolean validMove(Piece[][] board, int startRow, int startCol, int endRow, int endCol) {
-        // Implement the logic for a rook's valid moves
+        // initializes the possible moves for rook
         if (startRow == endRow) {
-            // Horizontal move
+            // move horizontally
             int minCol = Math.min(startCol, endCol);
             int maxCol = Math.max(startCol, endCol);
 
@@ -22,10 +23,9 @@ public class Rook extends Piece {
                 }
             }
 
-            // Check if the destination is empty or occupied by an opponent's piece
             return board[endRow][endCol] == null || board[endRow][endCol].isWhite() != isWhite();
         } else if (startCol == endCol) {
-            // Vertical move
+            // move vertically
             int minRow = Math.min(startRow, endRow);
             int maxRow = Math.max(startRow, endRow);
 
@@ -35,7 +35,6 @@ public class Rook extends Piece {
                 }
             }
 
-            // Check if the destination is empty or occupied by an opponent's piece
             return board[endRow][endCol] == null || board[endRow][endCol].isWhite() != isWhite();
         }
 
