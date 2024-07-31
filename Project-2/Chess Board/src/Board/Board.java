@@ -67,6 +67,11 @@ public class Board {
         Piece piece = pieces[startRow][startCol];
         if (piece != null && piece.isWhite() == isWhiteTurn) {
             if (piece.validMove(pieces, startRow, startCol, endRow, endCol)) {
+                // Update the piece's move status if it's a pawn
+                if (piece instanceof Pawn) {
+                    ((Pawn) piece).setHasMoved(true);
+                }
+
                 pieces[endRow][endCol] = piece;
                 pieces[startRow][startCol] = null;
                 isWhiteTurn = !isWhiteTurn;
@@ -90,7 +95,7 @@ public class Board {
         }
         return false;
     }
-    
+
     // added getPiece function to return user selected piece
     public Piece getPieceAt(int row, int col) {
         if (row < 0 || row >= 8 || col < 0 || col >= 8) {
