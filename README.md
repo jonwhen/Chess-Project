@@ -13,17 +13,17 @@ The project consists of a chess game graphic user interface implemented with Jav
 
   board/
 
-    Board.java: Manages the chessboard state and piece movements.
+    Board.java: Manages the state of the chessboard and all movements of the pieces.
 
   piece/
 
     Piece.java: Abstract base class for all chess pieces.
-    King.java: Represents the King piece.
-    Queen.java: Represents the Queen piece.
-    Rook.java: Represents the Rook piece.
-    Bishop.java: Represents the Bishop piece.
-    Knight.java: Represents the Knight piece.
-    Pawn.java: Represents the Pawn piece.
+    King.java: Manages the king piece
+    Queen.java: Manages the queen piece
+    Rook.java: Manages the rook piece
+    Bishop.java: Manages the bishop piece
+    Knight.java: Manages the knight piece
+    Pawn.java: Manages the pawn piece
 
 ## Setup Instructions
 
