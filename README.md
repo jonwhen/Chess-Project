@@ -28,4 +28,35 @@ The project consists of a chess game graphic user interface implemented with Jav
 ## Setup Instructions
 
 ### Prerequisites
-Requires Java Development Kit (jdK) installed
+Requires Java Development Kit (jdk) installed
+
+### Clone Repository
+
+```git clone https://git.txstate.edu/aso59/Chess-Project/tree/main```
+
+After cloning, change directory to project folder
+
+```cd GitHub/Chess-Project/Project-2/Chess\ Board/src```
+
+### Compile and Run
+
+Compile
+
+```javac game/*.java board/*.java piece/*.java```
+
+Run
+
+```java game.Game```
+
+
+### How the Game Works
+
+- Game automatically starts on white's turn
+- Select any valid piece and all possible moves will be shown via dots
+- Select any valid move and the game state will be updated and player turn will swap
+- A transcription of all moves are displayed on the left side
+- You will be notified at any point if a king is in check or checkmate
+- If in checkmate, it will announce a winner and the game will end
+
+
+
