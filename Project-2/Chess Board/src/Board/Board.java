@@ -70,17 +70,20 @@ public class Board {
                         return true;
                     }
                 } else {
+                	// make standard move
                     Piece targetPiece = pieces[endRow][endCol];
                     pieces[endRow][endCol] = piece;
                     pieces[startRow][startCol] = null;
                     if (piece instanceof Pawn) {
                         ((Pawn) piece).setHasMoved(true);
                     }
+                    // checks if the move puts in checkmate
                     if (targetPiece instanceof King) {
                         String winner = piece.isWhite() ? "White" : "Black";
                         System.out.println("Checkmate! " + winner + " wins!");
                         return true;
                     }
+                    // if in check, makes sure move takes them out of check
                     if (isInCheck(piece.isWhite() ? "white" : "black")) {
                         pieces[startRow][startCol] = piece;
                         pieces[endRow][endCol] = targetPiece;
